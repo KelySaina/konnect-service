@@ -44,7 +44,7 @@ const authorize = async (req, res) => {
           </html>
         `);
       }
-      
+
       // For API requests, return JSON error
       return res.status(400).json({
         error: 'invalid_request',
