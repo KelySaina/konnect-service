@@ -21,24 +21,146 @@ const authorize = async (req, res) => {
       if (req.accepts('html')) {
         return res.status(400).send(`
           <!DOCTYPE html>
-          <html>
+          <html lang="en">
           <head>
-            <title>Invalid OAuth Request</title>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Invalid OAuth Request - Konnect</title>
             <style>
-              body { font-family: system-ui; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-              .container { background: white; padding: 2rem; border-radius: 12px; max-width: 500px; text-align: center; }
-              h1 { color: #667eea; margin-bottom: 1rem; }
-              p { color: #666; line-height: 1.6; margin-bottom: 1.5rem; }
-              a { display: inline-block; padding: 0.75rem 1.5rem; background: #667eea; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; }
-              a:hover { background: #5568d3; }
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 1rem;
+              }
+              .container {
+                background: white;
+                padding: 3rem;
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                max-width: 550px;
+                width: 100%;
+                text-align: center;
+                animation: slideUp 0.4s ease;
+              }
+              @keyframes slideUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+              .error-icon {
+                font-size: 4rem;
+                margin-bottom: 1.5rem;
+                display: inline-block;
+                animation: bounce 0.6s ease;
+              }
+              @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+              }
+              h1 {
+                color: #333;
+                font-size: 1.75rem;
+                margin-bottom: 1rem;
+                font-weight: 600;
+              }
+              .error-code {
+                display: inline-block;
+                background: #fee;
+                color: #c33;
+                padding: 0.25rem 0.75rem;
+                border-radius: 6px;
+                font-size: 0.85rem;
+                font-weight: 600;
+                margin-bottom: 1.5rem;
+              }
+              p {
+                color: #666;
+                line-height: 1.7;
+                margin-bottom: 1.25rem;
+                font-size: 1.05rem;
+              }
+              .help-text {
+                background: #f8f9fa;
+                padding: 1.25rem;
+                border-radius: 10px;
+                margin: 1.5rem 0;
+                border-left: 4px solid #667eea;
+              }
+              .help-text strong {
+                color: #333;
+                display: block;
+                margin-bottom: 0.5rem;
+              }
+              .help-text p {
+                margin-bottom: 0;
+                font-size: 0.95rem;
+              }
+              .actions {
+                display: flex;
+                gap: 1rem;
+                margin-top: 2rem;
+                flex-wrap: wrap;
+              }
+              .btn {
+                flex: 1;
+                min-width: 140px;
+                padding: 0.875rem 1.5rem;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 1rem;
+                transition: all 0.2s;
+                display: inline-block;
+              }
+              .btn-primary {
+                background: #667eea;
+                color: white;
+              }
+              .btn-primary:hover {
+                background: #5568d3;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+              }
+              .btn-secondary {
+                background: white;
+                color: #667eea;
+                border: 2px solid #667eea;
+              }
+              .btn-secondary:hover {
+                background: #f8f9fa;
+                transform: translateY(-2px);
+              }
+              @media (max-width: 480px) {
+                .container { padding: 2rem 1.5rem; }
+                h1 { font-size: 1.5rem; }
+                .actions { flex-direction: column; }
+                .btn { width: 100%; }
+              }
             </style>
           </head>
           <body>
             <div class="container">
-              <h1>🔐 Invalid OAuth Request</h1>
-              <p>The OAuth authorization request is missing required parameters (client_id, redirect_uri, response_type).</p>
-              <p>If you're trying to log in, please start from your application.</p>
-              <a href="/">Go to Home</a>
+              <div class="error-icon">🔐</div>
+              <h1>Invalid OAuth Request</h1>
+              <div class="error-code">INVALID_REQUEST</div>
+              
+              <p>The OAuth authorization request is missing required parameters.</p>
+              
+              <div class="help-text">
+                <strong>What does this mean?</strong>
+                <p>This page requires specific OAuth parameters (client_id, redirect_uri, response_type) to authenticate you. These are typically provided automatically by your application.</p>
+              </div>
+              
+              <p style="font-size: 0.95rem; margin-top: 1.5rem;">If you're trying to log in, please <strong>start from your application</strong> rather than navigating directly to this URL.</p>
+              
+              <div class="actions">
+                <a href="/" class="btn btn-primary">← Go to Home</a>
+                <a href="/admin" class="btn btn-secondary">Admin Dashboard</a>
+              </div>
             </div>
           </body>
           </html>
