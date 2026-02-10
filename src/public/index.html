@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Konnect Service - Admin Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    .top-bar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .top-bar h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+
+    .btn-danger {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c0392b;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #667eea;
+      border: 1px solid #667eea;
+    }
+
+    .btn-secondary:hover {
+      background: #f0f0f0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .login-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-box h2 {
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .stat-card h3 {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #667eea;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .tab {
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #666;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header h2 {
+      font-size: 1.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background: #f9f9f9;
+      font-weight: 600;
+      color: #666;
+    }
+
+    .badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .badge-success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .badge-danger {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-header h3 {
+      font-size: 1.25rem;
+    }
+
+    .close {
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #999;
+    }
+
+    .error {
+      color: #e74c3c;
+      margin-top: 1rem;
+    }
+
+    .success {
+      color: #27ae60;
+      margin-top: 1rem;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+    }
+
+    .secret-box {
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-top: 1rem;
+      word-break: break-all;
+    }
+
+    .secret-box code {
+      color: #e74c3c;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="loginScreen" class="login-container">
+    <div class="login-box">
+      <h2>🔐 Admin Login</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="loginEmail" required />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+      </form>
+      <div id="loginError" class="error"></div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" style="display: none;">
+    <div class="top-bar">
+      <h1>🔐 Konnect Service Admin</h1>
+      <div class="user-info">
+        <span id="userEmail"></span>
+        <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Statistics -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Total Users</h3>
+          <div class="value" id="statTotalUsers">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Active Users</h3>
+          <div class="value" id="statActiveUsers">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>OAuth Clients</h3>
+          <div class="value" id="statClients">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Active Tokens</h3>
+          <div class="value" id="statTokens">0</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('users')">Users</button>
+        <button class="tab" onclick="switchTab('clients')">OAuth Clients</button>
+      </div>
+
+      <!-- Users Tab -->
+      <div id="usersTab" class="tab-content active">
+        <div class="card">
+          <div class="card-header">
+            <h2>Users</h2>
+          </div>
+          <table id="usersTable">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>MFA</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Clients Tab -->
+      <div id="clientsTab" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <h2>OAuth Clients</h2>
+            <button class="btn btn-primary" onclick="openCreateClientModal()">Create Client</button>
+          </div>
+          <table id="clientsTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Client ID</th>
+                <th>Redirect URIs</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Client Modal -->
+  <div id="createClientModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create OAuth Client</h3>
+        <span class="close" onclick="closeCreateClientModal()">&times;</span>
+      </div>
+      <form id="createClientForm">
+        <div class="form-group">
+          <label>Application Name *</label>
+          <input type="text" id="clientName" required />
+        </div>
+        <div class="form-group">
+          <label>Redirect URIs * (one per line)</label>
+          <textarea id="clientRedirectUris" required placeholder="http://localhost:4000/callback"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Scope</label>
+          <input type="text" id="clientScope" value="openid profile email" />
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+      </form>
+      <div id="createClientError" class="error"></div>
+      <div id="createClientSuccess" class="success"></div>
+      <div id="clientSecretBox" class="secret-box" style="display: none;">
+        <strong>⚠️ Save these credentials securely:</strong><br><br>
+        <strong>Client ID:</strong><br>
+        <code id="newClientId"></code><br><br>
+        <strong>Client Secret:</strong><br>
+        <code id="newClientSecret"></code><br><br>
+        <small>The secret will not be shown again!</small>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let accessToken = localStorage.getItem('accessToken');
+    let refreshToken = localStorage.getItem('refreshToken');
+
+    // Check if logged in on page load
+    if (accessToken) {
+      showDashboard();
+      loadData();
+    }
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          accessToken = data.access_token;
+          refreshToken = data.refresh_token;
+          localStorage.setItem('accessToken', accessToken);
+          localStorage.setItem('refreshToken', refreshToken);
+          localStorage.setItem('userEmail', email);
+
+          showDashboard();
+          loadData();
+        } else {
+          document.getElementById('loginError').textContent = data.error || 'Login failed';
+        }
+      } catch (error) {
+        document.getElementById('loginError').textContent = 'Network error';
+      }
+    });
+
+    function showDashboard() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      document.getElementById('userEmail').textContent = localStorage.getItem('userEmail');
+    }
+
+    function logout() {
+      localStorage.clear();
+      location.reload();
+    }
+
+    // API helper
+    async function apiCall(url, options = {}) {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+          ...options.headers
+        }
+      });
+
+      if (response.status === 403) {
+        // Try to refresh token
+        const refreshResponse = await fetch('/api/auth/refresh', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refresh_token: refreshToken })
+        });
+
+        if (refreshResponse.ok) {
+          const data = await refreshResponse.json();
+          accessToken = data.access_token;
+          localStorage.setItem('accessToken', accessToken);
+          return apiCall(url, options); // Retry
+        } else {
+          logout();
+        }
+      }
+
+      return response;
+    }
+
+    // Load data
+    async function loadData() {
+      await loadStats();
+      await loadUsers();
+      await loadClients();
+    }
+
+    async function loadStats() {
+      try {
+        const response = await apiCall('/api/admin/stats');
+        const data = await response.json();
+
+        document.getElementById('statTotalUsers').textContent = data.total_users;
+        document.getElementById('statActiveUsers').textContent = data.active_users;
+        document.getElementById('statClients').textContent = data.total_clients;
+        document.getElementById('statTokens').textContent = data.active_tokens;
+      } catch (error) {
+        console.error('Failed to load stats:', error);
+      }
+    }
+
+    async function loadUsers() {
+      try {
+        const response = await apiCall('/api/admin/users');
+        const data = await response.json();
+
+        const tbody = document.querySelector('#usersTable tbody');
+        tbody.innerHTML = data.users.map(user => `
+          <tr>
+            <td>${user.email}</td>
+            <td>${user.first_name || ''} ${user.last_name || ''}</td>
+            <td><span class="badge ${user.is_active ? 'badge-success' : 'badge-danger'}">${user.is_active ? 'Active' : 'Inactive'}</span></td>
+            <td>${user.mfa_enabled ? '✅' : '❌'}</td>
+            <td>${new Date(user.created_at).toLocaleDateString()}</td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Failed to load users:', error);
+      }
+    }
+
+    async function loadClients() {
+      try {
+        const response = await apiCall('/api/admin/clients');
+        const data = await response.json();
+
+        const tbody = document.querySelector('#clientsTable tbody');
+        tbody.innerHTML = data.map(client => `
+          <tr>
+            <td>${client.name}</td>
+            <td><code>${client.client_id}</code></td>
+            <td>${client.redirect_uris.join(', ')}</td>
+            <td><span class="badge ${client.is_active ? 'badge-success' : 'badge-danger'}">${client.is_active ? 'Active' : 'Inactive'}</span></td>
+            <td>
+              <div class="actions">
+                <button class="btn btn-danger btn-sm" onclick="deleteClient('${client.id}', '${client.name}')">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Failed to load clients:', error);
+      }
+    }
+
+    // Tab switching
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+      event.target.classList.add('active');
+      document.getElementById(tab + 'Tab').classList.add('active');
+    }
+
+    // Create client modal
+    function openCreateClientModal() {
+      document.getElementById('createClientModal').classList.add('active');
+      document.getElementById('createClientForm').reset();
+      document.getElementById('createClientError').textContent = '';
+      document.getElementById('createClientSuccess').textContent = '';
+      document.getElementById('clientSecretBox').style.display = 'none';
+    }
+
+    function closeCreateClientModal() {
+      document.getElementById('createClientModal').classList.remove('active');
+    }
+
+    document.getElementById('createClientForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('clientName').value;
+      const redirect_uris = document.getElementById('clientRedirectUris').value
+        .split('\n')
+        .map(uri => uri.trim())
+        .filter(uri => uri);
+      const scope = document.getElementById('clientScope').value;
+
+      try {
+        const response = await apiCall('/api/admin/clients', {
+          method: 'POST',
+          body: JSON.stringify({ name, redirect_uris, scope })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          document.getElementById('createClientSuccess').textContent = 'Client created successfully!';
+          document.getElementById('clientSecretBox').style.display = 'block';
+          document.getElementById('newClientId').textContent = data.client_id;
+          document.getElementById('newClientSecret').textContent = data.client_secret;
+
+          setTimeout(() => {
+            loadClients();
+            loadStats();
+          }, 1000);
+        } else {
+          document.getElementById('createClientError').textContent = data.error || 'Failed to create client';
+        }
+      } catch (error) {
+        document.getElementById('createClientError').textContent = 'Network error';
+      }
+    });
+
+    async function deleteClient(id, name) {
+      if (!confirm(`Delete client "${name}"?`)) return;
+
+      try {
+        const response = await apiCall(`/api/admin/clients/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          loadClients();
+          loadStats();
+        }
+      } catch (error) {
+        alert('Failed to delete client');
+      }
+    }
+  </script>
+</body>
+</html>
