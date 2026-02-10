@@ -1,17 +1,31 @@
 const nodemailer = require('nodemailer');
 
-// Create transporter
-const transporter = nodemailer.createTransporter({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD
+// Lazy transporter initialization
+let transporter = null;
+
+const getTransporter = () => {
+  if (!transporter && process.env.SMTP_HOST) {
+    transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      secure: false,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD
+      }
+    });
   }
-});
+  return transporter;
+};
 
 const sendPasswordResetEmail = async (email, token) => {
+  const transport = getTransporter();
+
+  if (!transport) {
+    console.warn('Email not configured. Password reset email not sent.');
+    return;
+  }
+
   const resetUrl = `${process.env.APP_URL}/reset-password?token=${token}`;
 
   const mailOptions = {
@@ -30,7 +44,7 @@ const sendPasswordResetEmail = async (email, token) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await transport.sendMail(mailOptions);
     console.log('Password reset email sent to:', email);
   } catch (error) {
     console.error('Failed to send email:', error);

@@ -16,9 +16,9 @@ const seedDatabase = async () => {
       `INSERT INTO users (id, email, password, first_name, last_name, is_active, is_verified)
        VALUES (?, ?, ?, ?, ?, ?, ?)
        ON DUPLICATE KEY UPDATE email=email`,
-      [adminId, 'admin@konnect-service.com', adminPassword, 'Admin', 'User', true, true]
+      [adminId, 'admin@konnect-service.ks', adminPassword, 'Admin', 'User', true, true]
     );
-    console.log('✅ Admin user created (email: admin@konnect-service.com, password: admin123)');
+    console.log('✅ Admin user created (email: admin@konnect-service.ks, password: admin123)');
 
     // Create test user
     const testUserId = uuidv4();
