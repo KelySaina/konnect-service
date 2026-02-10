@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Konnect Service - Login</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 1rem;
+    }
+
+    .container {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 450px;
+      width: 100%;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo h1 {
+      font-size: 2.5rem;
+      color: #667eea;
+      margin-bottom: 0.5rem;
+    }
+
+    .logo p {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .client-info {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #667eea;
+    }
+
+    .client-info strong {
+      color: #333;
+      font-size: 1.1rem;
+    }
+
+    .client-info small {
+      color: #666;
+      display: block;
+      margin-top: 0.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #333;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.875rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 1rem;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: #5568d3;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error {
+      background: #fee;
+      color: #c33;
+      padding: 0.875rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border-left: 4px solid #c33;
+      display: none;
+    }
+
+    .error.show {
+      display: block;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 1.5rem 0;
+      position: relative;
+    }
+
+    .divider::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1px;
+      background: #e0e0e0;
+    }
+
+    .divider span {
+      background: white;
+      padding: 0 1rem;
+      position: relative;
+      color: #666;
+      font-size: 0.875rem;
+    }
+
+    .register-link {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .register-link a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-left: 0.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1.5rem;
+      }
+
+      .logo h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <h1>🔐 Konnect</h1>
+      <p>Centralized Authentication Service</p>
+    </div>
+
+    <div class="client-info" id="clientInfo" style="display: none;">
+      <strong id="clientName"></strong>
+      <small id="clientScopes"></small>
+    </div>
+
+    <div class="error" id="errorMessage"></div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required placeholder="your@email.com">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="••••••••">
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">
+        Sign In
+      </button>
+    </form>
+
+    <div class="register-link">
+      Don't have an account? <a href="#" id="registerLink">Create one</a>
+    </div>
+  </div>
+
+  <script>
+    // Parse URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const clientId = urlParams.get('client_id');
+    const redirectUri = urlParams.get('redirect_uri');
+    const scope = urlParams.get('scope') || 'openid profile email';
+    const state = urlParams.get('state') || '';
+    const clientName = urlParams.get('client_name') || 'Application';
+
+    // Show client info if OAuth flow
+    if (clientId) {
+      document.getElementById('clientInfo').style.display = 'block';
+      document.getElementById('clientName').textContent = `${clientName} wants to access your account`;
+      document.getElementById('clientScopes').textContent = `Requested permissions: ${scope}`;
+    }
+
+    // Update register link to preserve OAuth params
+    const registerLink = document.getElementById('registerLink');
+    const registerUrl = new URL(window.location.origin + '/oauth/register');
+    if (clientId) {
+      registerUrl.searchParams.append('client_id', clientId);
+      registerUrl.searchParams.append('redirect_uri', redirectUri);
+      registerUrl.searchParams.append('scope', scope);
+      if (state) registerUrl.searchParams.append('state', state);
+      registerUrl.searchParams.append('client_name', clientName);
+    }
+    registerLink.href = registerUrl.toString();
+
+    // Handle form submission
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const errorDiv = document.getElementById('errorMessage');
+      const submitBtn = document.getElementById('submitBtn');
+      errorDiv.classList.remove('show');
+
+      const formData = new FormData(e.target);
+      const data = {
+        email: formData.get('email'),
+        password: formData.get('password'),
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        scope: scope,
+        state: state
+      };
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Signing in... <span class="spinner"></span>';
+
+        const response = await fetch('/oauth/authorize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.redirect_uri) {
+          window.location.href = result.redirect_uri;
+        } else {
+          errorDiv.textContent = result.error_description || 'Login failed. Please check your credentials.';
+          errorDiv.classList.add('show');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign In';
+        }
+      } catch (error) {
+        errorDiv.textContent = 'Network error. Please try again.';
+        errorDiv.classList.add('show');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign In';
+      }
+    });
+  </script>
+</body>
+</html>

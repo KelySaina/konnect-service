@@ -9,4 +9,7 @@ router.post('/token', oauthController.token);
 router.get('/userinfo', oauthController.userinfo);
 router.post('/revoke', oauthController.revoke);
 
+// Registration page for OAuth flow
+router.get('/register', oauthController.showRegister);
+
 module.exports = router;

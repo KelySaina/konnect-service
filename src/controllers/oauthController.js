@@ -55,108 +55,15 @@ const authorize = async (req, res) => {
       });
     }
 
-    // For simplicity, show a simple login page
-    // In production, this should render a proper consent/login page
-    res.send(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Konnect Service - Authorization</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          }
-          .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            max-width: 400px;
-            width: 100%;
-          }
-          h2 { color: #333; margin-top: 0; }
-          .client-info {
-            background: #f5f5f5;
-            padding: 1rem;
-            border-radius: 5px;
-            margin-bottom: 1.5rem;
-          }
-          form { display: flex; flex-direction: column; gap: 1rem; }
-          input {
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-          }
-          button {
-            padding: 0.75rem;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            font-weight: bold;
-          }
-          button:hover { background: #5568d3; }
-          .error { color: #d32f2f; margin-top: 1rem; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <h2>🔐 Authorization Required</h2>
-          <div class="client-info">
-            <strong>${client.name}</strong> wants to access your account.
-            <br><small>Scopes: ${scope}</small>
-          </div>
-          <form id="loginForm">
-            <input type="email" name="email" placeholder="Email" required />
-            <input type="password" name="password" placeholder="Password" required />
-            <button type="submit">Authorize</button>
-          </form>
-          <div id="error" class="error"></div>
-        </div>
-        <script>
-          document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const data = {
-              email: formData.get('email'),
-              password: formData.get('password'),
-              client_id: '${client_id}',
-              redirect_uri: '${redirect_uri}',
-              scope: '${scope}',
-              state: '${state || ''}'
-            };
+    // Serve the login page
+    const loginUrl = new URL('/oauth/authorize', `${req.protocol}://${req.get('host')}`);
+    loginUrl.searchParams.append('client_id', client_id);
+    loginUrl.searchParams.append('redirect_uri', redirect_uri);
+    loginUrl.searchParams.append('scope', scope);
+    if (state) loginUrl.searchParams.append('state', state);
+    loginUrl.searchParams.append('client_name', client.name);
 
-            try {
-              const response = await fetch('/oauth/authorize', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-              });
-
-              const result = await response.json();
-
-              if (response.ok && result.redirect_uri) {
-                window.location.href = result.redirect_uri;
-              } else {
-                document.getElementById('error').textContent = result.error_description || 'Authorization failed';
-              }
-            } catch (error) {
-              document.getElementById('error').textContent = 'Network error';
-            }
-          });
-        </script>
-      </body>
-      </html>
-    `);
+    res.sendFile('login.html', { root: './src/public' });
   } catch (error) {
     console.error('Authorize error:', error);
     res.status(500).json({
@@ -164,6 +71,11 @@ const authorize = async (req, res) => {
       error_description: 'Internal server error'
     });
   }
+};
+
+// Register page endpoint
+const showRegister = async (req, res) => {
+  res.sendFile('register.html', { root: './src/public' });
 };
 
 // Authorization endpoint (POST - handle login and generate code)
@@ -466,5 +378,6 @@ module.exports = {
   authorizePost,
   token,
   userinfo,
-  revoke
+  revoke,
+  showRegister
 };

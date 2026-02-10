@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Konnect Service - Register</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 1rem;
+    }
+
+    .container {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 450px;
+      width: 100%;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo h1 {
+      font-size: 2.5rem;
+      color: #667eea;
+      margin-bottom: 0.5rem;
+    }
+
+    .logo p {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .client-info {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #667eea;
+    }
+
+    .client-info strong {
+      color: #333;
+      font-size: 1.1rem;
+    }
+
+    .client-info small {
+      color: #666;
+      display: block;
+      margin-top: 0.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #333;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.875rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 1rem;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: #5568d3;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error {
+      background: #fee;
+      color: #c33;
+      padding: 0.875rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border-left: 4px solid #c33;
+      display: none;
+    }
+
+    .error.show {
+      display: block;
+    }
+
+    .success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 0.875rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border-left: 4px solid #2e7d32;
+      display: none;
+    }
+
+    .success.show {
+      display: block;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .login-link a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-left: 0.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1.5rem;
+      }
+
+      .logo h1 {
+        font-size: 2rem;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <h1>🔐 Konnect</h1>
+      <p>Create Your Account</p>
+    </div>
+
+    <div class="client-info" id="clientInfo" style="display: none;">
+      <strong id="clientName"></strong>
+      <small>After registration, you'll be redirected to continue</small>
+    </div>
+
+    <div class="error" id="errorMessage"></div>
+    <div class="success" id="successMessage"></div>
+
+    <form id="registerForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" name="first_name" required placeholder="John">
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" name="last_name" required placeholder="Doe">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required placeholder="your@email.com">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="••••••••" minlength="6">
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" name="confirm_password" required placeholder="••••••••" minlength="6">
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">
+        Create Account
+      </button>
+    </form>
+
+    <div class="login-link">
+      Already have an account? <a href="#" id="loginLink">Sign in</a>
+    </div>
+  </div>
+
+  <script>
+    // Parse URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const clientId = urlParams.get('client_id');
+    const redirectUri = urlParams.get('redirect_uri');
+    const scope = urlParams.get('scope') || 'openid profile email';
+    const state = urlParams.get('state') || '';
+    const clientName = urlParams.get('client_name') || 'Application';
+
+    // Show client info if OAuth flow
+    if (clientId) {
+      document.getElementById('clientInfo').style.display = 'block';
+      document.getElementById('clientName').textContent = `Creating account for ${clientName}`;
+    }
+
+    // Update login link to preserve OAuth params
+    const loginLink = document.getElementById('loginLink');
+    const loginUrl = new URL(window.location.origin + '/oauth/authorize');
+    if (clientId) {
+      loginUrl.searchParams.append('response_type', 'code');
+      loginUrl.searchParams.append('client_id', clientId);
+      loginUrl.searchParams.append('redirect_uri', redirectUri);
+      loginUrl.searchParams.append('scope', scope);
+      if (state) loginUrl.searchParams.append('state', state);
+      loginUrl.searchParams.append('client_name', clientName);
+    }
+    loginLink.href = loginUrl.toString();
+
+    // Handle form submission
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const errorDiv = document.getElementById('errorMessage');
+      const successDiv = document.getElementById('successMessage');
+      const submitBtn = document.getElementById('submitBtn');
+      errorDiv.classList.remove('show');
+      successDiv.classList.remove('show');
+
+      const formData = new FormData(e.target);
+      const password = formData.get('password');
+      const confirmPassword = formData.get('confirm_password');
+
+      // Validate passwords match
+      if (password !== confirmPassword) {
+        errorDiv.textContent = 'Passwords do not match';
+        errorDiv.classList.add('show');
+        return;
+      }
+
+      const data = {
+        email: formData.get('email'),
+        password: password,
+        first_name: formData.get('first_name'),
+        last_name: formData.get('last_name')
+      };
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Creating account... <span class="spinner"></span>';
+
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          successDiv.textContent = 'Account created successfully! Redirecting to login...';
+          successDiv.classList.add('show');
+
+          // Redirect to login after 2 seconds
+          setTimeout(() => {
+            window.location.href = loginUrl.toString();
+          }, 2000);
+        } else {
+          errorDiv.textContent = result.error || 'Registration failed. Please try again.';
+          errorDiv.classList.add('show');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create Account';
+        }
+      } catch (error) {
+        errorDiv.textContent = 'Network error. Please try again.';
+        errorDiv.classList.add('show');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account';
+      }
+    });
+  </script>
+</body>
+</html>
