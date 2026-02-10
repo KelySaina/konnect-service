@@ -247,6 +247,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const clientId = urlParams.get('client_id');
     const redirectUri = urlParams.get('redirect_uri');
+    const responseType = urlParams.get('response_type') || 'code';
     const scope = urlParams.get('scope') || 'openid profile email';
     const state = urlParams.get('state') || '';
     const clientName = urlParams.get('client_name') || 'Application';
@@ -262,6 +263,7 @@
     const registerLink = document.getElementById('registerLink');
     const registerUrl = new URL(window.location.origin + '/oauth/register');
     if (clientId) {
+      registerUrl.searchParams.append('response_type', responseType);
       registerUrl.searchParams.append('client_id', clientId);
       registerUrl.searchParams.append('redirect_uri', redirectUri);
       registerUrl.searchParams.append('scope', scope);
@@ -274,6 +276,7 @@
     const forgotPasswordLink = document.getElementById('forgotPasswordLink');
     const forgotPasswordUrl = new URL(window.location.origin + '/forgot-password');
     if (clientId) {
+      forgotPasswordUrl.searchParams.append('response_type', responseType);
       forgotPasswordUrl.searchParams.append('client_id', clientId);
       forgotPasswordUrl.searchParams.append('redirect_uri', redirectUri);
       forgotPasswordUrl.searchParams.append('scope', scope);
