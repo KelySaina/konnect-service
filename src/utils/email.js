@@ -26,7 +26,9 @@ const sendPasswordResetEmail = async (email, token) => {
     return;
   }
 
-  const resetUrl = `${process.env.APP_URL}/reset-password?token=${token}`;
+  // Use APP_URL or fallback to localhost:3000
+  const baseUrl = process.env.APP_URL || 'http://localhost:3000';
+  const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
   const mailOptions = {
     from: process.env.EMAIL_FROM,

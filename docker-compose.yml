@@ -50,6 +50,8 @@ services:
       NODE_ENV: ${NODE_ENV:-production}
     ports:
       - "3000:3000"
+    volumes:
+      - ./src:/app/src
     depends_on:
       mysql:
         condition: service_healthy

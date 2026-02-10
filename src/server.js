@@ -50,6 +50,15 @@ app.use('/api/auth', authRoutes);
 app.use('/oauth', oauthRoutes);
 app.use('/api/admin', adminRoutes);
 
+// Serve password reset pages
+app.get('/forgot-password', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'forgot-password.html'));
+});
+
+app.get('/reset-password', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'reset-password.html'));
+});
+
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({
