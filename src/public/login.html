@@ -234,7 +234,7 @@
     </form>
 
     <div style="text-align: center; margin-top: 1rem;">
-      <a href="/forgot-password" style="color: #667eea; text-decoration: none; font-size: 0.9rem;">Forgot password?</a>
+      <a href="/forgot-password" id="forgotPasswordLink" style="color: #667eea; text-decoration: none; font-size: 0.9rem;">Forgot password?</a>
     </div>
 
     <div class="register-link">
@@ -269,6 +269,18 @@
       registerUrl.searchParams.append('client_name', clientName);
     }
     registerLink.href = registerUrl.toString();
+
+    // Update forgot password link to preserve OAuth params
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    const forgotPasswordUrl = new URL(window.location.origin + '/forgot-password');
+    if (clientId) {
+      forgotPasswordUrl.searchParams.append('client_id', clientId);
+      forgotPasswordUrl.searchParams.append('redirect_uri', redirectUri);
+      forgotPasswordUrl.searchParams.append('scope', scope);
+      if (state) forgotPasswordUrl.searchParams.append('state', state);
+      forgotPasswordUrl.searchParams.append('client_name', clientName);
+    }
+    forgotPasswordLink.href = forgotPasswordUrl.toString();
 
     // Handle form submission
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
