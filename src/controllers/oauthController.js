@@ -17,6 +17,35 @@ const authorize = async (req, res) => {
 
     // Validate required parameters
     if (!response_type || !client_id || !redirect_uri) {
+      // If it's a browser request (HTML), serve a user-friendly error page
+      if (req.accepts('html')) {
+        return res.status(400).send(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Invalid OAuth Request</title>
+            <style>
+              body { font-family: system-ui; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+              .container { background: white; padding: 2rem; border-radius: 12px; max-width: 500px; text-align: center; }
+              h1 { color: #667eea; margin-bottom: 1rem; }
+              p { color: #666; line-height: 1.6; margin-bottom: 1.5rem; }
+              a { display: inline-block; padding: 0.75rem 1.5rem; background: #667eea; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; }
+              a:hover { background: #5568d3; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>🔐 Invalid OAuth Request</h1>
+              <p>The OAuth authorization request is missing required parameters (client_id, redirect_uri, response_type).</p>
+              <p>If you're trying to log in, please start from your application.</p>
+              <a href="/">Go to Home</a>
+            </div>
+          </body>
+          </html>
+        `);
+      }
+      
+      // For API requests, return JSON error
       return res.status(400).json({
         error: 'invalid_request',
         error_description: 'Missing required parameters'
