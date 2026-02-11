@@ -22,7 +22,7 @@ const authorize = async (req, res) => {
         // Try to get the referer to send user back to their app
         const referer = req.get('referer') || req.get('referrer');
         let actionButtons = '';
-        
+
         if (referer && !referer.includes(req.get('host'))) {
           // If referer exists and is from a different domain (like KaSh app)
           actionButtons = `
@@ -38,7 +38,7 @@ const authorize = async (req, res) => {
             </p>
           `;
         }
-        
+
         return res.status(400).send(`
           <!DOCTYPE html>
           <html lang="en">
