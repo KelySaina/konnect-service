@@ -1,0 +1,56 @@
+name: Deploy Konnect Service
+
+on:
+  push:
+    branches: [main]
+
+env:
+  COMPOSE_CMD: docker compose -f docker-compose.yml -f docker-compose.prod.yml
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, ks-server]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure .env exists
+        run: |
+          if [ ! -f .env ]; then
+            echo "No .env found — copying from .env.production.example"
+            cp .env.production.example .env
+          fi
+
+      - name: Stop existing containers
+        run: $COMPOSE_CMD down --remove-orphans || true
+
+      - name: Build images
+        run: $COMPOSE_CMD build --no-cache
+
+      - name: Start services
+        run: $COMPOSE_CMD up -d
+
+      - name: Wait for API to be healthy
+        run: |
+          echo "Waiting for API..."
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:7300/health > /dev/null 2>&1; then
+              echo "API is up!"
+              exit 0
+            fi
+            echo "Attempt $i/30..."
+            sleep 5
+          done
+          echo "API failed to start"
+          $COMPOSE_CMD logs api --tail 50
+          exit 1
+
+      - name: Seed database (first run only)
+        run: $COMPOSE_CMD exec -T api node src/database/seed.js || true
+
+      - name: Cleanup old images
+        run: docker image prune -f
+
+      - name: Show running containers
+        run: $COMPOSE_CMD ps

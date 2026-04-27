@@ -1,0 +1,33 @@
+# docker-compose.prod.yml
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Overrides for production:
+# - No source volume mounts (uses built image)
+# - No external ports for DB/Redis/MinIO (internal network only)
+# - Restart always
+
+services:
+  postgres:
+    ports: !reset []
+    restart: always
+
+  redis:
+    ports: !reset []
+    restart: always
+
+  minio:
+    ports: !reset []
+    restart: always
+
+  api:
+    restart: always
+    volumes: !reset
+      - ./keys:/app/keys
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      REDIS_HOST: redis
+      MINIO_ENDPOINT: minio
+
+  client:
+    restart: always

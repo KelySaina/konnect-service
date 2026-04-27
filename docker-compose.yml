@@ -1,0 +1,110 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: konnect-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-konnect}
+      POSTGRES_USER: ${DB_USER:-konnect}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-konnect_secret}
+    ports:
+      - "${DB_PORT:-7543}:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-konnect}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: konnect-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-konnect_minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-konnect_minio_secret}
+    ports:
+      - "${MINIO_PORT:-7900}:9000"
+      - "${MINIO_CONSOLE_PORT:-7901}:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: konnect-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-7637}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: konnect-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-konnect}
+      DB_USER: ${DB_USER:-konnect}
+      DB_PASSWORD: ${DB_PASSWORD:-konnect_secret}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-konnect_minio}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-konnect_minio_secret}
+      SESSION_SECRET: ${SESSION_SECRET:-change-me-in-production}
+      JWT_ISSUER: ${JWT_ISSUER:-http://localhost:7300}
+      CLIENT_URL: ${CLIENT_URL:-http://localhost:7517}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@konnect.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin123!}
+    ports:
+      - "${API_PORT:-7300}:3000"
+    volumes:
+      - ./src:/app/src
+      - ./keys:/app/keys
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: konnect-client
+    restart: unless-stopped
+    ports:
+      - "${CLIENT_PORT:-7517}:80"
+    depends_on:
+      - api
+
+volumes:
+  pg_data:
+  minio_data:
+  redis_data:
